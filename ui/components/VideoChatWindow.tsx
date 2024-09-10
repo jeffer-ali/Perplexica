@@ -147,13 +147,13 @@ const loadMessages = async (
 
 const VideoChatWindow = ({ 
   id,
-  intialInput
+  intialInput,
+  sendChatId
 }: { 
-  id?: string,  
+  id?: string
   intialInput?: string
+  sendChatId: (chatId: string) => void
 }) => {
-  const searchParams = useSearchParams();
-  const initialMessage = searchParams.get('q');
 
   const [chatId, setChatId] = useState<string | undefined>(id);
   const [newChatCreated, setNewChatCreated] = useState(false);
@@ -210,8 +210,14 @@ const VideoChatWindow = ({
   }, [messages]);
 
   useEffect(() => {
+    let readyTimer:any = null;
     if (isMessagesLoaded && isWSReady) {
-      setIsReady(true);
+      readyTimer = setTimeout(() => {
+        setIsReady(true);
+      }, 3000)
+    }
+    return () => {
+      readyTimer && clearTimeout(readyTimer)
     }
   }, [isMessagesLoaded, isWSReady]);
 
@@ -219,6 +225,7 @@ const VideoChatWindow = ({
     if (loading) return;
     setLoading(true);
     setMessageAppeared(false);
+    sendChatId(chatId!);
 
     let sources: Document[] | undefined = undefined;
     let recievedMessage = '';
@@ -359,11 +366,11 @@ const VideoChatWindow = ({
   };
 
   useEffect(() => {
-    if (isReady && intialInput) {
-      // sendMessage(intialInput);
+    if (isReady && intialInput && !id) {
+      sendMessage(intialInput);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReady, intialInput]);
+  }, [isReady, intialInput, id]);
 
   if (hasError) {
     return (
@@ -382,7 +389,6 @@ const VideoChatWindow = ({
       <div>
         {messages.length > 0 && (
           <>
-            <Navbar messages={messages} />
             <Chat
               loading={loading}
               messages={messages}
