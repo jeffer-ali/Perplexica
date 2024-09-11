@@ -18,7 +18,7 @@ export default function MarkmapHooks({
     // Create markmap and save to refMm
     if (refMm.current) return
     try {
-      const mm = Markmap.create(refSvg.current, { duration: 100 })
+      const mm = Markmap.create(refSvg.current, { duration: 100, pan: false })
       console.log('create', refSvg.current)
       refMm.current = mm
     } catch (e) { }
@@ -35,10 +35,10 @@ export default function MarkmapHooks({
 
   return (
     <div
-      className='h-full relative'
+      className='relative h-full'
     >
       <svg
-        className='w-full h-full'
+        className='w-full h-full dark:text-white'
         ref={refSvg}
       />
     </div>

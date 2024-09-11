@@ -74,6 +74,7 @@ const config: Config = {
             foreground: 'hsl(var(--destructive-foreground))'
           },
           border: 'hsl(var(--border))',
+          tbborder: 'hsl(var(--tb-border))',
           input: 'hsl(var(--input))',
           ring: 'hsl(var(--ring))',
           chart: {

@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom'
 import Error from 'next/error';
 import { cn } from '@/lib/utils';
+import { ImageDown, Maximize, Minimize, LayoutList, LayoutGrid } from 'lucide-react'
 import {
   Drawer,
   DrawerClose,
@@ -15,6 +16,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import VideoChatWindow from '@/components/VideoChatWindow'
 import MarkmapHooks from '@/components/markmap/markmap-hooks'
 
@@ -69,6 +71,91 @@ const VideoWindow = ({
   const [notFound, setNotFound] = useState(false);
   const [videoInfo, setVideoInfo] = useState<VideoInfo>();
   const [markmapData, setMarkmapData] = useState('');
+  const [newScene, setNewScene] = useState<any>()
+  const [scene, setScene] = useState([{
+    startTime: 0,
+    endTime: 14000,
+    url: '/videos/output/frame-0001.png'
+  }, {
+    startTime: 14000,
+    endTime: 20000,
+    url: '/videos/output/frame-0151.png'
+  }, {
+    startTime: 20000,
+    endTime: 25000,
+    url: '/videos/output/frame-0301.png'
+  }, {
+    startTime: 25000,
+    endTime: 27000,
+    url: '/videos/output/frame-0451.png'
+  }, {
+    startTime: 27000,
+    endTime: 36000,
+    url: '/videos/output/frame-0601.png'
+  }]);
+  const [subtitles, setSubtitles] = useState({
+    result: 'aaaaaaaa',
+    resultDetail: [{
+      FinalSentence: '中国大陆国产游戏黑神话悟空才上线短短三天，',
+      StartMs: 0,
+      EndMs: 7500
+    },
+    {
+      FinalSentence: '全球销售就突破1000万套，', 
+      StartMs: 7500,
+      EndMs: 10100
+    },
+    {
+      FinalSentence: '最高同时在线人数超过300万人。',
+      StartMs: 10250,
+      EndMs: 13150
+    },
+    {
+      FinalSentence: '官方微博数据统计，',  
+      StartMs: 13250,
+      EndMs: 14950
+    },
+    {
+      FinalSentence: '目前初步进账已超过26亿人民币，',
+      StartMs: 14950,
+      EndMs: 18150
+    },
+    {
+      FinalSentence: '折合约新台币118亿元。', 
+      StartMs: 18150,
+      EndMs: 20950
+    },
+    {
+      FinalSentence: '现在幕后花絮陆续释出，',
+      StartMs: 21100,
+      EndMs: 23475
+    },
+    {
+      FinalSentence: '持续炒热话题，',
+      StartMs: 23475,
+      EndMs: 25050
+    },
+    {
+      FinalSentence: '一个角色的完整塑造，',
+      StartMs: 25350,
+      EndMs: 27075
+    },
+    {
+      FinalSentence: '都是由动捕演员的一部分的捕捉加后期动画师共同来完成的，',
+      StartMs: 27075,
+      EndMs: 31875
+    },
+    {
+      FinalSentence: '给到我们自己创作的空间很大，',
+      StartMs: 31875,
+      EndMs: 34000
+    },
+    {
+      FinalSentence: '从演员的角度来说是更有激情。',
+      StartMs: 34000,
+      EndMs: 36600
+    }]
+  });
 
   const streamOutput = (text: string) => {
     const lines = text.split('\n');
@@ -114,12 +201,32 @@ streamOutput(addTxt)
     })()    
   }, []);
 
+  useEffect(() => {
+    if(subtitles?.resultDetail && subtitles?.resultDetail.length > 0) {
+      const newScene = scene.map(s => {
+        // 找出当前 scene 包含的 subtitles
+        const relatedSubtitles = subtitles.resultDetail.filter(sub => 
+          sub.StartMs >= s.startTime && sub.StartMs <= s.endTime
+        );
+
+        // 返回新的 scene 对象，添加 relatedSubtitles 属性
+        return {
+          ...s,
+          relatedSubtitles
+        };
+      });
+
+      setNewScene(newScene);
+      console.log(newScene)
+    }
+  }, [scene, subtitles]);
+
   return isReady ? (
     notFound ? (
       <Error statusCode={404} />
     ) : (
       <>
-        <div className="fixed z-40 top-0 left-0 right-0 px-4 lg:pl-[104px] lg:pr-6 lg:px-8 flex flex-row items-center justify-center w-full py-4 text-sm text-black dark:text-white/70 border-b bg-light-primary dark:bg-dark-100 border-light-100 dark:border-dark-200">
+        <div className="fixed z-40 top-0 left-0 right-0 px-4 lg:pl-[104px] lg:pr-6 lg:px-8 flex flex-row items-center justify-center w-full py-4 text-sm text-black dark:text-white/70 border-b bg-light-secondary dark:bg-dark-secondary border-light-100 dark:border-dark-200">
           <p className="hidden lg:flex">title</p>
         </div>
         <div className="w-full flex py-20 space-x-5">
@@ -192,52 +299,99 @@ streamOutput(addTxt)
               </div>
             </div>
 
-            <div className="h-80 shadow-sm rounded-lg bg-card text-card-foreground">
-              <MarkmapHooks data={markmapData} />
+            <div className="relative h-80 shadow-sm rounded-lg bg-card">
+                <MarkmapHooks data={markmapData} />
+                <div className='absolute right-4 bottom-4 space-x-2'>
+                  <Button variant="outline" size="icon">
+                    <ImageDown size={20} />
+                  </Button>
+                  <Button variant="outline" size="icon">
+                    <Maximize size={20} />
+                  </Button>
+                </div>
             </div>
 
             <div className="p-8 shadow-sm rounded-lg bg-card text-card-foreground">
-              <div>
-                <table className="border-collapse">
-                  <thead>
-                    <tr className='text-[#A0AEC0] text-left'>
-                      <th className='px-6 py-3 border-b border-[#2D3748]'>Scene</th>
-                      <th className='px-6 py-3 border-b border-[#2D3748]'></th>
-                      <th className='px-6 py-3 border-b border-[#2D3748]'>Content</th>
-                      <th className='px-6 py-3 border-b border-[#2D3748]'>Tag</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="text-white">
-                      <td className='px-6 py-3 border-b border-[#2D3748]' rowSpan={2}>
-                        01
-                      </td>
-                      <td className='px-6 py-3 border-b border-[#2D3748]'>
-                        <p className="chakra-text css-1hruuxo">00:00.00 - 00:02.50</p>
-                      </td>
-                      <td className='px-6 py-3 border-b border-[#2D3748]'>
-                        <p className="chakra-text css-13o7eu2">
-                          {' '}
-                          Every so often, there's a moment.
-                        </p>
-                      </td>
-                      <td className='px-6 py-3 border-b border-[#2D3748]'></td>
-                    </tr>
-                    <tr>
-                      <td className='px-6 py-3 border-b border-[#2D3748]'>
-                        <p className="chakra-text css-1hruuxo">00:00.00 - 00:02.50</p>
-                      </td>
-                      <td className='px-6 py-3 border-b border-[#2D3748]'>
-                        <p className="chakra-text css-13o7eu2">
-                          {' '}
-                          Every so often, there's a moment.
-                        </p>
-                      </td>
-                      <td className='px-6 py-3 border-b border-[#2D3748]'></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              <Tabs defaultValue="list" className="w-full">
+                <TabsList className='w-full'>
+                  <TabsTrigger value="list">
+                    <LayoutList size={25} />
+                  </TabsTrigger>
+                  <TabsTrigger value="grid">
+                    <LayoutGrid size={25} />
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="list">
+                  <div>
+                    <table className="border-collapse">
+                      <thead>
+                        <tr className='text-[#A0AEC0] text-left'>
+                          <th className='px-6 py-3 border-b border-tbborder'>场景</th>
+                          <th className='w-[100px] px-0 py-3 border-b border-tbborder'></th>
+                          <th className='px-6 py-3 border-b border-tbborder'>文案</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {newScene && newScene.map((s:any, sceneIndex:any) => (
+                        (s.relatedSubtitles && s.relatedSubtitles.length > 0) ? (
+                          s.relatedSubtitles.map((subtitle:any, subtitleIndex:any) => (
+                            <tr key={`${sceneIndex}-${subtitleIndex}`}>
+                              {subtitleIndex === 0 && (
+                                <td className='px-6 py-3 border-b border-tbborder' rowSpan={s.relatedSubtitles.length}>
+                                  <img src={s.url} width="100" alt={`Scene ${sceneIndex}`} />
+                                </td>
+                              )}
+                              <td className='px-0 py-3 text-sm border-b border-tbborder'>
+                                <p className="">
+                                  {`${(subtitle.StartMs / 1000).toFixed(2)} - ${(subtitle.EndMs / 1000).toFixed(2)}`}
+                                </p>
+                              </td>
+                              <td className='px-6 py-3 border-b border-tbborder'>
+                                <p className="">
+                                  {subtitle.FinalSentence}
+                                </p>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr key={`${sceneIndex}`}>
+                            <td className='px-6 py-3 border-b border-tbborder'>
+                              <img src={s.url} alt={`Scene ${sceneIndex}`} />
+                            </td>
+                            <td className='px-6 py-3 border-b border-tbborder'></td>
+                            <td className='px-6 py-3 border-b border-tbborder'>无字幕</td>
+                          </tr>
+                        )
+                      ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </TabsContent>
+                <TabsContent value="grid">
+                  <div className='grid grid-cols-3 gap-4'>
+                  {newScene && newScene.map((s:any, sceneIndex:any) => (
+                    <div key={`scene-${sceneIndex}`}>
+                      <div className=''>
+                        <img src={s.url} alt={`Scene ${sceneIndex}`} />
+                      </div>
+
+                      <div className='px-3 py-2 text-sm'>
+                      {(s.relatedSubtitles && s.relatedSubtitles.length > 0) ? (
+                        s.relatedSubtitles.map((subtitle:any, subtitleIndex:any) => (
+                          <p key={`sub-${subtitleIndex}`} className="line-clamp-1">
+                            {subtitle.FinalSentence}
+                          </p>
+                        ))
+                      ) : (
+                        <p>无字幕</p>
+                      )}
+                      </div>
+                    </div>
+                  ))}
+                  </div>
+                </TabsContent>
+              </Tabs>
+              
             </div>
           </div>
         </div>
