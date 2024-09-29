@@ -1,0 +1,46 @@
+export const zh = {
+  login: {
+    logInTitle: '欢迎',
+    resetpasswordTitle: '输入您的电子邮箱以重置密码',
+    verifyEmailTitle: '输入您的电子邮箱以完成账号验证',
+    loginPlatform: '{platform}账号登录',
+    loginTip: '点击上方按钮，即表示您同意我们的',
+    privacyPolicy: ' 隐私政策',
+    haveRead: ' 和 ',
+    termsOfUse: '使用条款',
+    otherSignInTip: '其他登录方式',
+    otherSignUpTip: '或用以下方式注册',
+    emailPlaceholder: '请输入您的电子邮箱',
+    passwordPlaceholder: '请输入您的密码',
+    PasswordOtherPlaceholder: '❓密码长度须为6-50个字符',
+    forgotPassword: '忘记密码',
+    signUp: '注册',
+    signIn: '登录',
+    tip: '首次访问 {projectName}? ',
+    createAccount: '创建账号',
+    haveAccount: '已有账号？',
+    logIn: '登录',
+    subTitle:
+      '请输入与您的账户关联的电子邮箱地址，我们将向您发送一个重置密码的链接。',
+    sendResetPasswordEmail: '发送重置密码邮件',
+    linkToLogin: '返回登录',
+    errorTipOfCharacters:
+      '❓密码长度须为6-50个字符，须同时包含数字和字母，且不包含特殊字符如“>”、“>”或“！”',
+    loginSuccessfullyTip: '登陆成功！',
+    errorTipOfEmail: '该邮箱已被使用',
+    invalidEmail: '无效邮箱',
+    wrongPassword: '密码错误',
+    emailSentTip: '邮件发送成功！',
+    errorTipOfSamePassword: '密码和确认密码必须一致',
+    errorTipOfConfirmPassword: '请填写确认密码',
+    passwordRequiredTip: '请填写密码',
+    emailRequiredTip: '请填写邮箱地址',
+    passwordTip: '您的密码必须同时包含数字和字母',
+    errorTip: '抱歉！您可能已通过其他方式登录了此账户。请使用另一种登录方式。',
+    verifyEmailTip:
+      '请输入与您的账号关联的电子邮箱地址，我们将向您发送验证链接。',
+    sendVerificationEmail: '发送验证邮件',
+    signUpSuccessTip: '请查收验证邮件并点击验证链接完成账号验证。',
+    errorEmailOrPassword: '请输入正确的邮箱或密码'
+  }
+}
