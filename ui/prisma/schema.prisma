@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("USED_POSTGRES_PRISMA_URL")
+  directUrl = env("USED_POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model Chat {
+  id          String        @id @default(uuid())
+  title       String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  userId      String
+  path        String
+  messages    Json
+  sharePath   String?
+  summary     String?
+  likeStatus  LikeStatus[]
+  attributes  Json?         // 扩展字段，可用于存储用户的额外信息
+  isDeleted   Boolean       @default(false)  // 标识是否已删除
+}
+
+model LikeStatus {
+  id        String    @id @default(uuid())
+  messageId String    
+  chatId    String
+  chat      Chat      @relation(fields: [chatId], references: [id])
+  userId    String
+  like      Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model User {                // 只记录注册用户
+  id        String    @id @default(uuid())
+  name      String?
+  email     String?
+  picture   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  attributes  Json?         // 扩展字段，可用于存储用户的额外信息
+}
+
+model GoogleTrend {
+  id                  String    @id @default(uuid())
+  query               String    // 查询关键词
+  newsUrl             String    // 新闻链接
+  newsTitle           String?   // 新闻标题
+  newsContent         String?   // 新闻内容
+  newsRewrittenTitle  String?   // 重写的新闻标题
+  newsSummary         String?   // 新闻摘要
+  traffic             String
+  attributes          Json?         // 扩展字段，可用于存储额外信息
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model dim_secondhand_goods_detail {
+  id                BigInt   @id @default(autoincrement()) // 唯一标识，每个记录的主键
+  item_id           String   // 商品ID
+  item_url          String   // 商品网址
+  seller_name       String?  // 卖家名称
+  seller_id         String?  // 卖家ID
+  item_sold         Int?     // 商品是否已售出
+  available         Boolean  // 商品是否可用
+  interested        Int?     // 感兴趣人数
+  post_time         DateTime // 发布时间
+  updated_time      DateTime // 更新时间
+  condition         String?  // 商品状况
+  price             Decimal? // 价格
+  price_currency    String?  // 价格货币
+  quantity          Int?     // 数量
+  location          String?  // 位置信息
+  city              String?  // 城市
+  if_free           Boolean  // 商品是否免费
+  latitude          Float?   // 纬度
+  longitude         Float?   // 经度
+  shipping_fee      String?  // 运费信息
+  product_name      String   // 产品名称
+  brand             String?  // 品牌
+  description       String?  // 描述
+  main_image        String   // 主图链接
+  main_image_oss    String?  // OSS主图链接
+  image_list        String   // 图片列表
+  specification     Json     // 规格信息
+  category          String   // 类别
+  web_code          String   // 网站代码
+  last_update_time  DateTime // 最后更新时间
+  product_embedding Unsupported("vector")?  // 产品嵌入信息
+  geometry          Unsupported("geometry")? // 地理信息
+}
+
+generator kysely {
+    provider = "prisma-kysely"
+
+    // Optionally provide a destination directory for the generated file
+    // and a filename of your choice
+    output = "../kysely"
+    fileName = "types.ts"
+    // Optionally generate runtime enums to a separate file
+    // enumFileName = "enums.ts"
+}
